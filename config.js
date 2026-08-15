@@ -1,3 +1,3 @@
-window.SUPABASE_URL = window.SUPABASE_URL || '';
-window.SUPABASE_PUBLIC_KEY = window.SUPABASE_PUBLIC_KEY || '';
-window.SUPABASE_TABLE = window.SUPABASE_TABLE || 'fantasy_players';
+window.SUPABASE_URL = 'https://kprelmyazivrkckidvfg.supabase.co';
+window.SUPABASE_PUBLIC_KEY = 'sb_publishable_L-Nkx4qYeu5rbLxZWYbJNw_-whObqZv';
+window.SUPABASE_TABLE = 'fantasy_players';
