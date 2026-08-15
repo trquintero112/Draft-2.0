@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fantasy Draft War Room 2026</title>
-  <link rel="stylesheet" href="styles.css?v=clean1">
+  <link rel="stylesheet" href="styles.css?v=clean2">
 </head>
 <body>
 <header class="hero">
   <div>
     <p class="eyebrow">2026/2027 NFL Fantasy Draft</p>
     <h1>Fantasy Draft War Room</h1>
-    <p class="sub">Custom rankings, editable tiers, player notes, sleeper picks, draft tracking, Supabase sync, and compact view.</p>
+    <p class="sub">Custom rankings, editable tiers, player notes, sleeper picks, draft tracking, and compact view.</p>
   </div>
   <div class="hero-card">
     <div class="stat"><span id="availableCount">0</span><label>Available</label></div>
@@ -20,26 +20,25 @@
   </div>
 </header>
 <main class="page">
-  <section class="top-actions panel">
+  <section class="top-actions panel full-width-section">
     <div class="button-row">
       <button id="bestBtn">Refresh Rec</button>
       <button id="editRanksBtn">Edit Rankings</button>
       <button id="compactBtn">Compact View</button>
       <button id="resetDraftBtn" class="danger">Reset Draft</button>
-      <button id="seedSupabaseBtn">Seed Supabase</button>
-      <button id="refreshSourcesBtn">Refresh Sources</button>
+      <button id="refreshSourcesBtn">Refresh Roster</button>
       <button id="sleeperPicksBtn">Sleeper Picks</button>
       <button id="exportCsvBtn">Export CSV</button>
       <button id="printPdfBtn">Print/PDF</button>
     </div>
-    <div id="syncStatus" class="sync-status">Checking Supabase connection...</div>
+    <div id="syncStatus" class="sync-status">Loading roster...</div>
   </section>
 
-  <section id="rankEditorView" class="panel rank-editor-view" hidden>
+  <section id="rankEditorView" class="panel rank-editor-view full-width-section" hidden>
     <div class="rank-editor-head">
       <div>
         <h2>Edit Custom Rankings</h2>
-        <p>Drag rows to reorder. Position is shown under the player name, and Tier is editable.</p>
+        <p>Drag rows to reorder. Team and position are shown under the player name, and Tier is editable.</p>
       </div>
       <div class="rank-editor-actions-top">
         <button id="undoRankChangeBtn">Undo Last Change</button>
@@ -56,7 +55,7 @@
     <div id="rankEditorRows" class="rank-editor-rows"></div>
   </section>
 
-  <section class="panel command-center">
+  <section class="panel command-center full-width-section">
     <section class="top-widgets">
       <div class="recommendation-card inner-card">
         <h2>Best Available Recommendation</h2>
@@ -70,14 +69,14 @@
       </div>
     </section>
     <section class="filter-bar">
-      <div class="control-group search-box"><label>Search</label><input id="search" type="search" placeholder="Bijan, BUF, TE, Texans..."></div>
+      <div class="control-group search-box"><label>Search</label><input id="search" type="search" placeholder="Bijan, DET, TE..."></div>
       <div class="control-group pos-box"><label>Position</label><div class="chips" id="positionChips"></div></div>
       <div class="control-group show-box"><label>Show</label><select id="statusFilter"><option value="available">Available only</option><option value="all">All players</option><option value="mine">My team</option><option value="drafted">Drafted by anyone</option></select></div>
       <div class="control-group sort-box"><label>Sort</label><select id="sortBy"><option value="custom_rank">Custom Ranking</option><option value="recommendation">Recommendation Score</option><option value="tier">Tier then Custom Ranking</option><option value="adp">Consensus Rank</option><option value="pos">Position</option></select></div>
     </section>
   </section>
 
-  <section class="content-grid">
+  <section class="content-grid full-width-section">
     <section class="panel board-wrap">
       <details id="draftBoardDetails" open>
         <summary class="section-summary">Draft Board</summary>
@@ -98,7 +97,7 @@
 <dialog id="playerInfoDialog" class="player-info-dialog"><div class="player-info-card"><button id="closePlayerInfoBtn" class="player-info-close" type="button">Close</button><div id="playerInfoContent"></div></div></dialog>
 <dialog id="sleeperDialog" class="sleeper-dialog"><div class="sleeper-card"><button id="closeSleeperBtn" class="player-info-close" type="button">Close</button><div id="sleeperContent"></div></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=clean1"></script>
-<script src="app.js?v=clean1"></script>
+<script src="config.js?v=clean2"></script>
+<script src="app.js?v=clean2"></script>
 </body>
 </html>
