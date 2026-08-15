@@ -3,6 +3,77 @@ const AUTH_KEY='fantasy-war-room-auth-mode-v37';
 const POSITIONS=['QB','RB','WR','TE','K','DST'];
 const ADMIN_USER='admin', ADMIN_PASS='tqsd26', GUEST_PASS='password';
 const MANUAL_SLEEPERS='draft-war-room-manual-sleepers-clean2';
+
+const VIEW_SIZE_KEY='draft-war-room-view-size-v1';
+function injectViewSizeStyles(){
+  if(document.getElementById('viewSizeStylesV1'))return;
+  const st=document.createElement('style');
+  st.id='viewSizeStylesV1';
+  st.textContent=`
+    .view-size-wrap-v1{position:relative;display:inline-flex;align-items:center;z-index:5000}
+    .view-size-btn-v1{background:linear-gradient(135deg,#314a74,#5b7fc0)!important;color:#fff!important;white-space:nowrap!important}
+    .view-size-menu-v1{position:absolute;top:calc(100% + 6px);right:0;min-width:160px;background:#08172a;border:1px solid #315b95;border-radius:14px;padding:6px;box-shadow:0 18px 45px rgba(0,0,0,.55);display:none;z-index:99999}
+    .view-size-menu-v1.open{display:block}
+    .view-size-menu-v1 button{display:block;width:100%;text-align:left;margin:2px 0;background:#10233e!important;border:1px solid #203655!important;color:#eef5ff!important;padding:8px 10px!important;border-radius:10px!important;font-size:13px!important}
+    .view-size-menu-v1 button.active{background:#f7c948!important;color:#13213a!important;border-color:#f7c948!important}
+    body.view-zoom-90 .hero,body.view-zoom-90 .page{zoom:.90}
+    body.view-zoom-80 .hero,body.view-zoom-80 .page{zoom:.80}
+    body.view-zoom-75 .hero,body.view-zoom-75 .page{zoom:.75}
+    body.view-zoom-90 .hero,body.view-zoom-90 .page,body.view-zoom-80 .hero,body.view-zoom-80 .page,body.view-zoom-75 .hero,body.view-zoom-75 .page{transform-origin:top center}
+    @supports not (zoom: .9){
+      body.view-zoom-90 .site-scale-fallback-v1{transform:scale(.90);transform-origin:top center;width:111.111%}
+      body.view-zoom-80 .site-scale-fallback-v1{transform:scale(.80);transform-origin:top center;width:125%}
+      body.view-zoom-75 .site-scale-fallback-v1{transform:scale(.75);transform-origin:top center;width:133.333%}
+    }
+  `;
+  document.head.appendChild(st);
+}
+function normalizeViewSizeDom(){
+  if(document.querySelector('.site-scale-fallback-v1'))return;
+  const hero=document.querySelector('.hero');
+  const page=document.querySelector('.page');
+  if(!hero||!page)return;
+  const wrap=document.createElement('div');
+  wrap.className='site-scale-fallback-v1';
+  hero.parentNode.insertBefore(wrap,hero);
+  wrap.appendChild(hero);
+  wrap.appendChild(page);
+}
+function clearViewZoomClasses(){document.body.classList.remove('view-zoom-90','view-zoom-80','view-zoom-75')}
+function applyViewSize(mode){
+  mode=mode||'100';
+  clearViewZoomClasses();
+  document.body.classList.toggle('compact-view',mode==='compact');
+  if(mode==='90')document.body.classList.add('view-zoom-90');
+  if(mode==='80')document.body.classList.add('view-zoom-80');
+  if(mode==='75')document.body.classList.add('view-zoom-75');
+  localStorage.setItem(VIEW_SIZE_KEY,mode);
+  const btn=document.getElementById('viewSizeBtnV1');
+  const label=mode==='compact'?'Compact':mode+'%';
+  if(btn)btn.textContent='View Size: '+label+' ▼';
+  document.querySelectorAll('.view-size-menu-v1 button').forEach(b=>b.classList.toggle('active',b.dataset.viewSize===mode));
+  const compactBtn=document.getElementById('compactBtn');
+  if(compactBtn)compactBtn.textContent=document.body.classList.contains('compact-view')?'Normal View':'Compact View';
+}
+function installViewSizeControl(){
+  injectViewSizeStyles();
+  normalizeViewSizeDom();
+  if(document.getElementById('viewSizeBtnV1')){applyViewSize(localStorage.getItem(VIEW_SIZE_KEY)||'100');return;}
+  const row=document.querySelector('.top-actions .button-row')||document.querySelector('.button-row');
+  if(!row)return;
+  const wrap=document.createElement('span');
+  wrap.className='view-size-wrap-v1';
+  wrap.innerHTML=`<button id="viewSizeBtnV1" class="view-size-btn-v1" type="button">View Size: 100% ▼</button><div id="viewSizeMenuV1" class="view-size-menu-v1"><button type="button" data-view-size="100">100% Default</button><button type="button" data-view-size="90">90%</button><button type="button" data-view-size="80">80%</button><button type="button" data-view-size="75">75%</button><button type="button" data-view-size="compact">Compact</button></div>`;
+  const compact=document.getElementById('compactBtn');
+  if(compact&&compact.parentElement===row)compact.insertAdjacentElement('afterend',wrap);else row.appendChild(wrap);
+  const btn=document.getElementById('viewSizeBtnV1');
+  const menu=document.getElementById('viewSizeMenuV1');
+  btn.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
+  menu.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();menu.classList.remove('open');applyViewSize(b.dataset.viewSize)});
+  document.addEventListener('click',()=>menu.classList.remove('open'));
+  applyViewSize(localStorage.getItem(VIEW_SIZE_KEY)||'100');
+}
+
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 let state={players:[],activePos:'ALL'}, seedPlayers=[], sb=null, usingSupabase=false, currentRecommendation=null;
 const rankEditor={active:'ALL',undoStack:[],dragId:null};
@@ -14,7 +85,7 @@ function authMode(){return localStorage.getItem(AUTH_KEY)||''}
 function isAdmin(){return authMode()==='admin'}
 function configured(){return window.SUPABASE_URL&&window.SUPABASE_PUBLIC_KEY&&String(window.SUPABASE_URL).startsWith('https://')}
 function setStatus(m,c='ok'){const e=$('#syncStatus');if(e){e.textContent=m;e.className='sync-status '+c}}
-async function init(){bind();await waitForAuth();await loadSeed();await connect();render();setupRankEditor();refreshBestRecommendation();applyAuthUI()}
+async function init(){bind();await waitForAuth();await loadSeed();await connect();render();setupRankEditor();refreshBestRecommendation();applyAuthUI();installViewSizeControl()}
 function waitForAuth(){if(authMode())return Promise.resolve();showAuthGate();return new Promise(r=>document.addEventListener('auth-ready',r,{once:true}))}
 function showAuthGate(){const g=document.createElement('div');g.className='auth-gate';g.innerHTML=`<div class="auth-card"><h2>Fantasy Draft War Room</h2><p>Sign in to access draft board.</p><div class="auth-tabs"><button id="authAdminTab" class="active">Admin</button><button id="authGuestTab">Guest</button></div><div id="adminPanel"><label>Username<input id="authUser"></label><label>Password<input id="authPass" type="password"></label><div id="authErr" class="auth-error" hidden>Invalid admin username or password.</div><button id="authLogin">Login as Admin</button></div><div id="guestPanel" hidden><label>Guest Password<input id="guestPass" type="password"></label><div id="guestErr" class="auth-error" hidden>Invalid guest password.</div><button id="guestLogin">Continue as Guest</button></div></div>`;document.body.appendChild(g);const tab=x=>{$('#adminPanel').hidden=x;$('#guestPanel').hidden=!x;$('#authAdminTab').classList.toggle('active',!x);$('#authGuestTab').classList.toggle('active',x)};$('#authAdminTab').onclick=()=>tab(false);$('#authGuestTab').onclick=()=>tab(true);const ok=mode=>{localStorage.setItem(AUTH_KEY,mode);g.remove();document.dispatchEvent(new CustomEvent('auth-ready'))};const admin=()=>{$('#authUser').value.trim().toLowerCase()===ADMIN_USER&&$('#authPass').value===ADMIN_PASS?ok('admin'):($('#authErr').hidden=false)};const guest=()=>{$('#guestPass').value===GUEST_PASS?ok('guest'):($('#guestErr').hidden=false)};$('#authLogin').onclick=admin;$('#guestLogin').onclick=guest;$('#authPass').onkeydown=e=>{if(e.key==='Enter')admin()};$('#guestPass').onkeydown=e=>{if(e.key==='Enter')guest()}}
 async function loadSeed(){const urls=['excel-seed.json?v=clean2','excel-seed-v45.json?v=clean2','seed-rankings.json?v=clean2','data/seed-rankings.json?v=clean2'];let data=null;for(const u of urls){try{const r=await fetch(u,{cache:'no-store'});if(r.ok){data=await r.json();break}}catch{}}if(!data)throw new Error('Could not load roster file.');seedPlayers=normalizeRows(data.players||[]);if(!seedPlayers.length)throw new Error('Roster file loaded but contained 0 players.');}
@@ -133,5 +204,5 @@ function jumpToRankPlayer(id){rankEditor.active='ALL';renderRankTabs();renderRan
 function toggleManualSleeper(id){if(!assertAdmin())return;const p=state.players.find(x=>x.id===id),o=manualSleepers();if(o[id])delete o[id];else o[id]={id:p.id,name:p.name,pos:p.pos,team:p.team};localStorage.setItem(MANUAL_SLEEPERS,JSON.stringify(o));render();renderRankEditor()}
 function showSleeperPicks(){const manual=manualSleepers();const rows=state.players.filter(p=>!p.drafted&&(manual[p.id]||isSleeper(p))).sort((a,b)=>a.custom_rank-b.custom_rank);$('#sleeperContent').innerHTML=`<h2>Remaining Sleeper Picks</h2><div class="sleeper-list">${rows.map(p=>`<div class="sleeper-row"><div class="sleeper-main"><b>${esc(p.name)}</b><span class="pos ${p.pos}">${p.pos}</span><span>${p.team}</span></div><div class="sleeper-meta"><span>Rank ${p.custom_rank}</span><span>Tier ${p.tier}</span></div><p>${esc(infoFor(p)['Draft Note']||'Manual or note-based sleeper.')}</p></div>`).join('')||'<p>No remaining sleepers.</p>'}</div>`;$('#sleeperDialog').showModal()}
 function exportCsv(){const r=[['pick','drafted_by','name','team','pos','custom_rank','tier'],...state.players.map(p=>[p.pick||'',p.draftedBy||'',p.name,p.team,p.pos,p.custom_rank,p.tier])];const t=r.map(x=>x.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='fantasy-war-room-export.csv';a.click();URL.revokeObjectURL(a.href)}
-function toggleCompact(){document.body.classList.toggle('compact-view');$('#compactBtn').textContent=document.body.classList.contains('compact-view')?'Normal View':'Compact View'}
+function toggleCompact(){const next=document.body.classList.contains('compact-view')?'100':'compact';applyViewSize(next)}
 document.addEventListener('DOMContentLoaded',()=>init().catch(e=>{console.error(e);setStatus('Startup failed: '+(e.message||e),'bad')}));
