@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fantasy Draft War Room 2026</title>
-  <link rel="stylesheet" href="styles.css?v=viewsize2">
+  <link rel="stylesheet" href="styles.css?v=viewsize5">
 </head>
 <body>
 <header class="hero">
@@ -24,7 +24,7 @@
     <div class="button-row">
       <button id="bestBtn">Refresh Rec</button>
       <button id="editRanksBtn">Edit Rankings</button>
-      <button id="compactBtn">Compact View</button>
+      <button id="compactBtn" hidden style="display:none!important">Compact View</button>
       <button id="resetDraftBtn" class="danger">Reset Draft</button>
       <button id="seedSupabaseBtn">Seed Supabase</button>
       <button id="refreshSourcesBtn">Refresh Sources</button>
@@ -34,7 +34,6 @@
     </div>
     <div id="syncStatus" class="sync-status">Checking Supabase connection...</div>
   </section>
-
   <section id="rankEditorView" class="panel rank-editor-view" hidden>
     <div class="rank-editor-head">
       <div>
@@ -55,7 +54,6 @@
     <div class="rank-grid-head"><div>Rank</div><div>Player</div><div>Tier</div><div>Notes / Sleeper</div></div>
     <div id="rankEditorRows" class="rank-editor-rows"></div>
   </section>
-
   <section class="panel command-center">
     <section class="top-widgets">
       <div class="recommendation-card inner-card">
@@ -76,7 +74,6 @@
       <div class="control-group sort-box"><label>Sort</label><select id="sortBy"><option value="custom_rank">Custom Ranking</option><option value="recommendation">Recommendation Score</option><option value="tier">Tier then Custom Ranking</option><option value="adp">Consensus Rank</option><option value="pos">Position</option></select></div>
     </section>
   </section>
-
   <section class="content-grid">
     <section class="panel board-wrap">
       <details id="draftBoardDetails" open>
@@ -98,7 +95,8 @@
 <dialog id="playerInfoDialog" class="player-info-dialog"><div class="player-info-card"><button id="closePlayerInfoBtn" class="player-info-close" type="button">Close</button><div id="playerInfoContent"></div></div></dialog>
 <dialog id="sleeperDialog" class="sleeper-dialog"><div class="sleeper-card"><button id="closeSleeperBtn" class="player-info-close" type="button">Close</button><div id="sleeperContent"></div></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=viewsize2"></script>
-<script src="app.js?v=viewsize2"></script>
+<script src="config.js?v=viewsize5"></script>
+<script src="app.js?v=viewsize5"></script>
+<script src="view-size-patch.js?v=viewsize5"></script>
 </body>
 </html>
